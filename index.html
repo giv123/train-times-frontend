@@ -128,25 +128,25 @@
 
         const output = data.services
         .map(service => {
-            const loc = service.locationDetail || {};
-            const time = loc.gbttBookedDeparture || 'N/A';
-            const destination = loc.destination?.[0]?.description || 'Unknown';
-            const platform = loc.platform || 'TBD';
-            const operator = service.atocName || 'Unknown operator';
+          const loc = service.locationDetail || {};
+          const time = loc.gbttBookedDeparture || 'N/A';
+          const destination = loc.destination?.[0]?.description || 'Unknown';
+          const platform = loc.platform || 'TBD';
+          const operator = service.atocName || 'Unknown operator';
 
-            // Infer status by comparing scheduled and realtime departure times
-            const scheduled = loc.gbttBookedDeparture;
-            const realtime = loc.realtimeDeparture;
+          // Infer status by comparing scheduled and realtime departure times
+          const scheduled = loc.gbttBookedDeparture;
+          const realtime = loc.realtimeDeparture;
 
-            let status = 'On time';
-            if (realtime && scheduled && realtime !== scheduled) {
+          let status = 'On time';
+          if (realtime && scheduled && realtime !== scheduled) {
             status = 'Delayed';
-            }
+          }
 
-            return `
+          return `
             <li>
-                <strong>${time}</strong> → ${destination} 
-                (Platform ${platform}) — ${operator} — Status: ${status}
+              <strong>${time}</strong> → ${destination} 
+              (Platform ${platform}) — ${operator} — Status: ${status}
             </li>
             `;
         })
