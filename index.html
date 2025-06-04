@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Train Times</title>
   <style>
     body {
@@ -15,7 +15,8 @@
     h1 {
       color: #0056b3;
     }
-    input, button {
+    input,
+    button {
       padding: 8px;
       font-size: 16px;
       margin-right: 10px;
@@ -63,11 +64,16 @@
       animation: spin 1s linear infinite;
     }
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
     @media (max-width: 600px) {
-      input, button {
+      input,
+      button {
         width: 100%;
         margin-top: 10px;
       }
@@ -76,13 +82,23 @@
 </head>
 <body>
   <h1>Isaac's Dea (Train) Departures</h1>
-  <p>Enter a UK station code (e.g., <strong>GLQ</strong> for Glasgow Queen Street) to get live train departure times.</p>
-  <input id="station" value="ANL" placeholder="Enter station code (e.g., ANL) for Anniesland" aria-label="Station code input" />
+  <p>
+    Enter a UK station code (e.g., <strong>GLQ</strong> for Glasgow Queen Street)
+    to get live train departure times.
+  </p>
+  <input
+    id="station"
+    value="ANL"
+    placeholder="Enter station code (e.g., ANL) for Anniesland"
+    aria-label="Station code input"
+  />
   <button onclick="getTrains()" aria-label="Fetch train departures">Get Trains</button>
+
   <div id="loading" aria-live="polite">
     <div class="spinner"></div>
     <p>Loading train times...</p>
   </div>
+
   <div id="results" role="region" aria-live="polite"></div>
 
   <script>
@@ -92,13 +108,11 @@
       const resultsDiv = document.getElementById('results');
       const loadingDiv = document.getElementById('loading');
 
-      // Validate station code format
       if (!/^[A-Z]{3}$/.test(station)) {
         resultsDiv.innerHTML = `<p class="error">Invalid station code format. Please enter a 3-letter code.</p>`;
         return;
       }
 
-      // Show loading indicator
       loadingDiv.style.display = 'block';
       resultsDiv.innerHTML = '';
 
@@ -112,12 +126,14 @@
           return;
         }
 
-        const output = data.services.map(service => {
-          const time = service.locationDetail.gbttBookedDeparture || 'N/A';
-          const destination = service.destination[0]?.description || 'Unknown';
-          const platform = service.locationDetail.platform || 'TBD';
-          return `<li>${time} → ${destination} (Platform ${platform})</li>`;
-        }).join('');
+        const output = data.services
+          .map((service) => {
+            return `<li>
+              <strong>${service.scheduledTime}</strong> → ${service.destination} 
+              (Platform ${service.platform}) — ${service.operator} — Status: ${service.status}
+            </li>`;
+          })
+          .join('');
 
         resultsDiv.innerHTML = `<ul>${output}</ul>`;
       } catch (error) {
