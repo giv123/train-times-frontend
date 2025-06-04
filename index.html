@@ -10403,9 +10403,17 @@
     const matchedStation = stations.find(
       s => s.name.toUpperCase() === selectedName.toUpperCase()
     );
+
     if (matchedStation) {
       getTrains(); // Only fetch if a valid station is selected
     }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        getTrains();
+      }
     });
 
     async function getTrains() {
