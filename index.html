@@ -10397,6 +10397,17 @@
       datalist.appendChild(option);
     });
 
+    // Auto-trigger getTrains when a station is selected from the list
+    input.addEventListener('change', () => {
+    const selectedName = input.value.trim();
+    const matchedStation = stations.find(
+      s => s.name.toUpperCase() === selectedName.toUpperCase()
+    );
+    if (matchedStation) {
+      getTrains(); // Only fetch if a valid station is selected
+    }
+    });
+
     async function getTrains() {
       const stationName = input.value.trim();
       resultsDiv.innerHTML = '';
