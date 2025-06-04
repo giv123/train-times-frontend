@@ -128,7 +128,7 @@
 
         const output = data.services
         .map(service => {
-          const loc = service.locationDetail;
+          const loc = service.locationDetail || {};
           const time = loc.gbttBookedDeparture || 'N/A';
           const destination = loc.destination?.[0]?.description || 'Unknown';
           const platform = loc.platform || 'TBD';
