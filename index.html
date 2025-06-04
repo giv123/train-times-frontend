@@ -127,13 +127,24 @@
         }
 
         const output = data.services
-          .map((service) => {
-            return `<li>
-              <strong>${service.scheduledTime}</strong> → ${service.destination} 
-              (Platform ${service.platform}) — ${service.operator} — Status: ${service.status}
-            </li>`;
-          })
-          .join('');
+        .map(service => {
+          const loc = service.locationDetail;
+          const time = loc.gbttBookedDeparture || 'N/A';
+          const destination = loc.destination?.[0]?.description || 'Unknown';
+          const platform = loc.platform || 'TBD';
+          const operator = service.atocName || 'Unknown operator';
+
+          // Example status logic
+          const status = loc.realtimeDepartureActual ? 'On time' : 'Delayed';
+
+          return `
+          <li>
+              <strong>${time}</strong> → ${destination} 
+              (Platform ${platform}) — ${operator} — Status: ${status}
+          </li>
+          `;
+        })
+        .join('');
 
         resultsDiv.innerHTML = `<ul>${output}</ul>`;
       } catch (error) {
