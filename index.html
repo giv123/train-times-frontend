@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Times</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1 {
+      color: #0056b3;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-right: 10px;
+      width: 200px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #004494;
+    }
+    #loading {
+      display: none;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #results {
+      margin-top: 20px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background-color: #ffffff;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @media (max-width: 600px) {
+      input, button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Isaac's Dea (Train) Departures</h1>
+  <p>Enter a UK station code (e.g., <strong>GLQ</strong> for Glasgow Queen Street) to get live train departure times.</p>
+  <input id="station" value="ANL" placeholder="Enter station code (e.g., ANL) for Anniesland" aria-label="Station code input" />
+  <button onclick="getTrains()" aria-label="Fetch train departures">Get Trains</button>
+  <div id="loading" aria-live="polite">
+    <div class="spinner"></div>
+    <p>Loading train times...</p>
+  </div>
+  <div id="results" role="region" aria-live="polite"></div>
+
+  <script>
+    async function getTrains() {
+      const stationInput = document.getElementById('station');
+      const station = stationInput.value.trim().toUpperCase();
+      const resultsDiv = document.getElementById('results');
+      const loadingDiv = document.getElementById('loading');
+
+      // Validate station code format
+      if (!/^[A-Z]{3}$/.test(station)) {
+        resultsDiv.innerHTML = `<p class="error">Invalid station code format. Please enter a 3-letter code.</p>`;
+        return;
+      }
+
+      // Show loading indicator
+      loadingDiv.style.display = 'block';
+      resultsDiv.innerHTML = '';
+
+      try {
+        const res = await fetch(`https://train-times-backend.onrender.com/api/train-times/${station}`);
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        const data = await res.json();
+
+        if (!data.services || data.services.length === 0) {
+          resultsDiv.innerHTML = `<p class="error">No trains found for station code: ${station}</p>`;
+          return;
+        }
+
+        const output = data.services.map(service => {
+          const time = service.locationDetail.gbttBookedDeparture || 'N/A';
+          const destination = service.destination[0]?.description || 'Unknown';
+          const platform = service.locationDetail.platform || 'TBD';
+          return `<li>${time} → ${destination} (Platform ${platform})</li>`;
+        }).join('');
+
+        resultsDiv.innerHTML = `<ul>${output}</ul>`;
+      } catch (error) {
+        if (error.message.includes('Failed to fetch')) {
+          resultsDiv.innerHTML = `<p class="error">Network error: Please check your internet connection.</p>`;
+        } else {
+          resultsDiv.innerHTML = `<p class="error">Error fetching train times: ${error.message}</p>`;
+        }
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+
+    // Auto-fetch trains for the default station on page load
+    window.onload = () => getTrains();
+  </script>
+</body>
+</html>
