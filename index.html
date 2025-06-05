@@ -10400,9 +10400,7 @@
     // Auto-trigger getTrains when a station is selected from the list
     input.addEventListener('change', () => {
       const selectedName = input.value.trim();
-      const matchedStation = stations.find(
-        s => s.name.toUpperCase() === selectedName.toUpperCase()
-      );
+      const matchedStation = stations.find(s => s.name.toUpperCase() === selectedName.toUpperCase());
 
       if (matchedStation) {
         getTrains(); // Only fetch if a valid station is selected
@@ -10421,14 +10419,14 @@
       resultsDiv.innerHTML = '';
 
       // Find station code by matching the name (case insensitive)
-      const stationObj = stations.find(s => s.name.toUpperCase() === stationName.toUpperCase());
+      const matchedStation = stations.find(s => s.name.toUpperCase() === stationName.toUpperCase());
 
-      if (!stationObj) {
+      if (!matchedStation) {
         resultsDiv.innerHTML = `<p class="error">Station name not recognised. Please select a station from the list.</p>`;
         return;
       }
 
-      const stationCode = stationObj.code;
+      const stationCode = matchedStation.code;
 
       loadingDiv.style.display = 'block';
 
